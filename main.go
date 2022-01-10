@@ -31,7 +31,6 @@ func main() {
 	}
 
 	// Print Account Information
-
 	fmt.Printf("\nUsername   : %v \n", api.APIEmail)
 	fmt.Printf("Account ID : %v \n\n", zones[0].Account.ID)
 
@@ -39,8 +38,8 @@ func main() {
 	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 
 	// Print Zone Headers
-	fmt.Fprintf(w, "| Sites: \t | Zone ID: \t | Plan: \t | Apex record: \t \n")
-	fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ------------------ \n")
+	fmt.Fprintf(w, "| Sites: \t | Zone ID: \t | Plan: \t | Apex record: \t | Proxied \n")
+	fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
 
 	// Print Each Zone
 	for _, zone := range zones {
@@ -52,9 +51,9 @@ func main() {
 
 		// Print Each
 		if len(myRecords) > 0 {
-			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | %v \n", zone.Name, zone.ID, zone.Plan.Name, myRecords[0].Content)
+			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | %v \t | %t \n", zone.Name, zone.ID, zone.Plan.Name, myRecords[0].Content, *myRecords[0].Proxied)
 		} else {
-			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | n/a \n", zone.Name, zone.ID, zone.Plan.Name)
+			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | n/a \t | n/a \n", zone.Name, zone.ID, zone.Plan.Name)
 		}
 	}
 	w.Flush()
