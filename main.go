@@ -56,6 +56,89 @@ func main() {
 			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | n/a \t | n/a \n", zone.Name, zone.ID, zone.Plan.Name)
 		}
 	}
+	fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
 	w.Flush()
+
+	// Cloudflared Tunnels Basic Usage
+	var tunnels []cloudflare.Tunnel
+	tunnelParam := &cloudflare.TunnelListParams{
+		AccountID: zones[0].Account.ID,
+	}
+	tunnels, err = api.Tunnels(ctx, *tunnelParam)
+
+	if err != nil {
+		log.Fatal("Error looking up tunnels")
+	}
+
+	fmt.Println("\tActive Tunnels: ")
+	for i, tunnel := range tunnels {
+		if tunnel.DeletedAt == nil && len(tunnel.Connections) != 0 {
+			fmt.Printf("%v: %v - %v\n", i, tunnel.Name, tunnel.ID)
+
+			for _, connection := range tunnel.Connections {
+				fmt.Printf("\t%v - %v - %v\n", connection.ColoName, connection.OpenedAt, connection.ClientID)
+			}
+		}
+
+	}
+
+	// Zero Trust Rules Basic Usage
+	var teamsRules []cloudflare.TeamsRule
+	teamsRules, err = api.TeamsRules(ctx, zones[0].Account.ID)
+	var httpRules []cloudflare.TeamsRule
+	var l4Rules []cloudflare.TeamsRule
+	var dnsRules []cloudflare.TeamsRule
+
+	if err != nil {
+		log.Fatal("Error looking up Zero Trust Account")
+	}
+
+	fmt.Println("\nTeams Rules Info:")
+
+	for _, teamRule := range teamsRules {
+		if teamRule.Filters[0] == cloudflare.DnsFilter {
+			dnsRules = append(dnsRules, teamRule)
+		}
+		if teamRule.Filters[0] == cloudflare.L4Filter {
+			l4Rules = append(l4Rules, teamRule)
+		}
+		if teamRule.Filters[0] == cloudflare.HttpFilter {
+			httpRules = append(httpRules, teamRule)
+		}
+
+	}
+
+	fmt.Println("\tDNS Rules:")
+	for i, dnsRule := range dnsRules {
+		fmt.Printf("\t\t%v: %v - %v - %v \n", i+1, dnsRule.Name, dnsRule.Filters, dnsRule.Action)
+		if dnsRule.Traffic != "" {
+			fmt.Printf("\t\t\t%v\n", dnsRule.Traffic)
+		}
+		if dnsRule.Identity != "" {
+			fmt.Printf("\t\t\t%v\n", dnsRule.Identity)
+		}
+	}
+
+	fmt.Println("\tL4 Rules:")
+	for i, l4Rule := range l4Rules {
+		fmt.Printf("\t\t%v: %v - %v - %v \n", i+1, l4Rule.Name, l4Rule.Filters, l4Rule.Action)
+		if l4Rule.Traffic != "" {
+			fmt.Printf("\t\t\t%v\n", l4Rule.Traffic)
+		}
+		if l4Rule.Identity != "" {
+			fmt.Printf("\t\t\t%v\n", l4Rule.Identity)
+		}
+	}
+
+	fmt.Println("\tHTTP Rules:")
+	for i, httpRule := range httpRules {
+		fmt.Printf("\t\t%v: %v - %v - %v \n", i+1, httpRule.Name, httpRule.Filters, httpRule.Action)
+		if httpRule.Traffic != "" {
+			fmt.Printf("\t\t\t%v\n", httpRule.Traffic)
+		}
+		if httpRule.Identity != "" {
+			fmt.Printf("\t\t\t%v\n", httpRule.Identity)
+		}
+	}
 
 }
