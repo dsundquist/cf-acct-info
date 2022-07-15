@@ -28,3 +28,5 @@ Account ID : 3xxxxxxxxxxxxxxxxxxxxxxxf
 | example8.com         | lxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx8   | Pro Website          | 45.45.45.76        | true
 | example9.com         | mxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx8   | Pro Website          | 1.2.3.4            | true
 ```
+
+This is a work in progress, thinking about adding some output for Zero Trust Settings. 
