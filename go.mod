@@ -1,4 +1,4 @@
-module cfgetacct
+module getcfacct
 
 go 1.17
 
