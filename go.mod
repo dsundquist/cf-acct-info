@@ -1,4 +1,4 @@
-module cloudflare-api
+module cfgetacct
 
 go 1.17
 
