@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"text/tabwriter"
 
 	"github.com/cloudflare/cloudflare-go"
 )
@@ -34,29 +35,29 @@ func main() {
 	fmt.Printf("Account ID : %v \n\n", zones[0].Account.ID)
 
 	// Using text/tabwriter for formating
-	// w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
+	w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 
-	// // Print Zone Headers
-	// fmt.Fprintf(w, "| Sites: \t | Zone ID: \t | Plan: \t | Apex record: \t | Proxied \n")
-	// fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
+	// Print Zone Headers
+	fmt.Fprintf(w, "| Sites: \t | Zone ID: \t | Plan: \t | Apex record: \t | Proxied \n")
+	fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
 
-	// // Print Each Zone
-	// for _, zone := range zones {
+	// Print Each Zone
+	for _, zone := range zones {
 
-	// 	// Setup for APEX Records
-	// 	var rr cloudflare.DNSRecord
-	// 	rr.Name = zone.Name
-	// 	myRecords, _ := api.DNSRecords(ctx, zone.ID, rr)
+		// Setup for APEX Records
+		var rr cloudflare.DNSRecord
+		rr.Name = zone.Name
+		myRecords, _ := api.DNSRecords(ctx, zone.ID, rr)
 
-	// 	// Print Each
-	// 	if len(myRecords) > 0 {
-	// 		fmt.Fprintf(w, "| %v \t | %v \t | %v \t | %v \t | %t \n", zone.Name, zone.ID, zone.Plan.Name, myRecords[0].Content, *myRecords[0].Proxied)
-	// 	} else {
-	// 		fmt.Fprintf(w, "| %v \t | %v \t | %v \t | n/a \t | n/a \n", zone.Name, zone.ID, zone.Plan.Name)
-	// 	}
-	// }
-	// fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
-	// w.Flush()
+		// Print Each
+		if len(myRecords) > 0 {
+			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | %v \t | %t \n", zone.Name, zone.ID, zone.Plan.Name, myRecords[0].Content, *myRecords[0].Proxied)
+		} else {
+			fmt.Fprintf(w, "| %v \t | %v \t | %v \t | n/a \t | n/a \n", zone.Name, zone.ID, zone.Plan.Name)
+		}
+	}
+	fmt.Fprintf(w, "| ------------------ \t | -------------------------------- \t | ------------------ \t | ---------------- \t | ---- \n")
+	w.Flush()
 
 	// Cloudflared Tunnels Basic Usage
 	var tunnels []cloudflare.Tunnel
